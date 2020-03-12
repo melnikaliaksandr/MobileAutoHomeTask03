@@ -42,7 +42,6 @@ public class FirstTest {
                 By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
                 "Cannot find text in search field ",
                 20);
-        System.out.println(textInSearchField);
         Assert.assertEquals("We see unexpected text in search field", "Search Wikipedia", textInSearchField);
     }
 
@@ -71,6 +70,34 @@ public class FirstTest {
                 "Articles is still present on the page",
                 5);
         Assert.assertTrue("Count of articles less than 2", resultAfterClickCancelButton);
+    }
+
+    @Test
+    public void checkWordInSearchResult() {
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
+                "Cannot find search button",
+                10);
+        waitForElementAndSendKeys(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Java",
+                "Cannot send text in search field",
+                10);
+        List<WebElement> listOfArticles = waitAndReturnListOfElements(
+                By.id("org.wikipedia:id/page_list_item_title"),
+                "Cannot find the articles",
+                15);
+        String wordForSearch = "Java";
+        Assert.assertTrue("Minimum one article does not contain the word '" + wordForSearch + "'",
+                containsValue(wordForSearch, listOfArticles));
+    }
+
+    private boolean containsValue(String value, List<WebElement> listOfElements) {
+        boolean result = false;
+        for (WebElement element : listOfElements) {
+            result = element.getAttribute("text").contains(value);
+        }
+        return result;
     }
 
     private boolean waitForElementNotPresent(By by, String errorMessage, long timeoutInSeconds) {
